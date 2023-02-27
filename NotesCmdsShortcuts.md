@@ -8,7 +8,7 @@
 
 - php artisan seed:db
 
-## To test te relation ship of your pivot table, for the many to many relationship between users table and another table
+## To test te relationship of your pivot table, for the many to many relationship between users table and another table
 
 - php artisan tinker
 - $user = \App\Models\User::find(1)
