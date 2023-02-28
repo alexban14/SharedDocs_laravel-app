@@ -13,9 +13,10 @@ class DocumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $documents = Document::get()->all();
+        $pageSize = $request->page_size ?? 20;
+        $documents = Document::query()->paginate($pageSize);
 
         // return new JsonResponse([
         //     'documents' => $documents
@@ -69,15 +70,21 @@ class DocumentController extends Controller
 
         $updated = $document->update([
             // we check if user updated the title, if not we keep the old one
-            'title' => $request->title?? $document->title,
-            'body' => $request->body?? $document->body,
+            'title' => $request->title ?? $document->title,
+            'body' => $request->body ?? $document->body,
         ]);
 
-        if($updated) {
+        if(!$updated) {
             return new JsonResponse([
-                'updated_document' => $updated
+                'errors' => [
+                    'Failed to update model.'
+                ]
             ], 400);
         }
+
+        return new JsonResponse([
+            'updated_document' => $document
+        ]);
     }
 
     /**
