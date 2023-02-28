@@ -9,6 +9,11 @@ class Document extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'body',
+    ];
+
     // casting the body of the document from json to an array
     // so we don't need to run the body field thru encode/decode functions
     protected $casts = [
