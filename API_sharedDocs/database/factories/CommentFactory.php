@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Database\Factories\Helpers\FactoryHelper;
+use App\Models\Document;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comment>
@@ -14,12 +17,13 @@ class CommentFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
     public function definition(): array
     {
         return [
             'body' => [],
-            'user_id' => 1,
-            'document_id' => 1
+            'user_id' => FactoryHelper::getRandomModelId(User::class),
+            'document_id' => FactoryHelper::getRandomModelId(Document::class)
         ];
     }
 }
