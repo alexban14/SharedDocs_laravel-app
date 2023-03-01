@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\DocumentResource;
+use App\Repositories\DocumentRepository;
 
 class DocumentController extends Controller
 {
@@ -30,22 +30,15 @@ class DocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, DocumentRepository $repository)
     {
-        $created = DB::transaction(function() use ($request) {
-            $created = Document::query()->create([
-                'title' => $request->title,
-                'body' => $request->body
-            ]);
+        $created = $repository->create($request->only([
+            'title',
+            'body',
+            'user_ids'
+        ]));
 
-            $created->users()->sync($request->user_ids);
-
-            return $created;
-        });
-
-        return new JsonResponse([
-            'document' => $created
-        ]);
+        return new DocumentResource($created);
     }
 
     /**
@@ -64,46 +57,25 @@ class DocumentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Document $document)
+    public function update(Request $request, Document $document, DocumentRepository $repository)
     {
-        // $updatedSecond = $document->update([ $request->only(['title', 'body']) ]);
+        $updated = $repository->update($document, $request->only([
+            'title',
+            'body',
+            'user_ids'
+        ]));
 
-        $updated = $document->update([
-            // we check if user updated the title, if not we keep the old one
-            'title' => $request->title ?? $document->title,
-            'body' => $request->body ?? $document->body,
-        ]);
-
-        if(!$updated) {
-            return new JsonResponse([
-                'errors' => [
-                    'Failed to update model.'
-                ]
-            ], 400);
-        }
-
-        return new JsonResponse([
-            'updated_document' => $document
-        ]);
+        return new DocumentResource($updated);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Document $document)
+    public function destroy(Document $document, DocumentRepository $repository)
     {
-        $deleted = $document->forceDelete();
-
-        if(!$deleted) {
-            return new JsonResponse([
-                'errors' => [
-                    'Could not delete resource.'
-                ]
-            ], 400);
-        }
-
+        $document = $repository->forceDelete($document);
         return new JsonResponse([
-            'deleted' => $deleted
-        ], 400);
+            'data' => 'success'
+        ]);
     }
 }

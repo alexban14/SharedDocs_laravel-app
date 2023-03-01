@@ -9,6 +9,12 @@ class Comment extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'body',
+        'user_id',
+        'document_id'
+    ];
+
     // casting the body of the document from json to an array
     // so we don't need to run the body field thru encode/decode functions
     protected $casts = [

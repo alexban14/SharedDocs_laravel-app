@@ -1,1 +1,0 @@
-{"virtualbox":{"/home/vagrant/code":{"type":null,"mount_options":["uid=1000","gid=1000","_netdev"],"guestpath":"/home/vagrant/code","hostpath":"E:/BanAlexandru/SharedDocs_laravel_app/API_sharedDocs","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"E:/BanAlexandru/SharedDocs_laravel_app/API_sharedDocs","disabled":false,"__vagrantfile":true}}}
