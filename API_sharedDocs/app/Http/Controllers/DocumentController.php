@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\GeneralJsonException;
 use App\Models\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,10 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
+        // exception class helper function
+        // report(GeneralJsonException::class);
+        // abort(404);
+
         $pageSize = $request->page_size ?? 20;
         $documents = Document::query()->paginate($pageSize);
 

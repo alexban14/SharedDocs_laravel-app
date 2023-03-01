@@ -18,6 +18,8 @@ class CommentRepository extends BaseRepository
                 'document_id' => data_get($attributes, 'document_id')
             ]);
 
+            throw_if(!$created, GeneralJsonException::class, 'Failed to create the comment.');
+
             return $created;
         });
 
@@ -33,9 +35,10 @@ class CommentRepository extends BaseRepository
                 'document_id' => data_get($attributes, 'document_id', $comment->document_id)
             ]);
 
-            if(!$updated) {
-                throw new \Exception('Failed to update comment');
-            }
+            // if(!$updated) {
+            //     throw new \Exception('Failed to update comment');
+            // }
+            throw_if(!$updated, GeneralJsonException::class, 'Failed to update the comment.');
 
             return $comment;
         });
@@ -47,9 +50,10 @@ class CommentRepository extends BaseRepository
         {
             $deleted = $comment->forceDelete();
 
-            if(!$deleted) {
-                throw new \Exception('Cannot delete comment.');
-            }
+            // if(!$deleted) {
+            //     throw new \Exception('Cannot delete comment.');
+            // }
+            throw_if(!$deleted, GeneralJsonException::class, 'Failed to delete the comment.');
 
             return $deleted;
         });

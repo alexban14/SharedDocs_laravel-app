@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\GeneralJsonException;
 use Illuminate\Support\Facades\DB;
 use App\Models\Document;
 
@@ -23,6 +24,11 @@ class DocumentRepository extends BaseRepository
                 'body' => data_get($attributes, 'body'),
             ]);
 
+            // if(!$created) {
+            //     throw new GeneralJsonException('Failed to create document.');
+            // }
+            throw_if( !$created, GeneralJsonException::class, 'Failed to create document.');
+
             if( $userIds = data_get($attributes, 'user_ids') ) {
                 $created->users()->sync($userIds);
             }
@@ -42,9 +48,10 @@ class DocumentRepository extends BaseRepository
                 'body' => data_get($attributes, 'body', $document->body)
             ]);
 
-            if(!$updated) {
-                throw new \Exception('Failed to update document');
-            }
+            // if(!$updated) {
+            //     throw new \Exception('Failed to update document');
+            // }
+            throw_if( !$updated, GeneralJsonException::class, 'Failed to update document.');
 
             if( $userIds = data_get($attributes, 'user_ids') ) {
                 $document->users()->sync($userIds);
@@ -59,9 +66,10 @@ class DocumentRepository extends BaseRepository
         return DB::transaction( function() use ($document) {
             $deleted = $document->forceDelete();
 
-            if(!$deleted) {
-                throw new \Exception('Cannot delete document.');
-            }
+            // if(!$deleted) {
+            //     throw new \Exception('Cannot delete document.');
+            // }
+            throw_if( !$deleted, GeneralJsonException::class,'Failed to create document.');
 
             return $deleted;
         });
