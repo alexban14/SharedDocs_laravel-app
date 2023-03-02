@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Models\Document;
 
 use App\Models\Document;
 use Illuminate\Broadcasting\Channel;

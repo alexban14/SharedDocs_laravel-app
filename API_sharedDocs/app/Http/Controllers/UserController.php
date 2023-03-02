@@ -18,9 +18,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // test event
-        event( new UserCreated( User::factory()->make() ) );
+        // event( new UserCreated( User::factory()->make() ) );
 
-        $pageSize = $request->page_size ?? 5;
+        $pageSize = $request->page_size ?? 10;
         $users = User::query()->paginate($pageSize);
 
         return UserResource::collection($users);

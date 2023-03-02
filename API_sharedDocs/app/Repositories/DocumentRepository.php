@@ -2,8 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Events\DocumentCreated;
-use App\Events\DocumentUpdated;
+use App\Events\Models\Document\DocumentCreated;
+use App\Events\Models\Document\DocumentDeleted;
+use App\Events\Models\Document\DocumentUpdated;
 use App\Exceptions\GeneralJsonException;
 use Illuminate\Support\Facades\DB;
 use App\Models\Document;
@@ -77,7 +78,7 @@ class DocumentRepository extends BaseRepository
             // }
             throw_if( !$deleted, GeneralJsonException::class,'Failed to create document.');
 
-            event( new DocumentUpdated($document) );
+            event( new DocumentDeleted($document) );
 
             return $deleted;
         });
