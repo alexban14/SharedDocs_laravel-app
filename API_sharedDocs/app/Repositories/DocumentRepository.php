@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Events\DocumentCreated;
+use App\Events\DocumentUpdated;
 use App\Exceptions\GeneralJsonException;
 use Illuminate\Support\Facades\DB;
 use App\Models\Document;
@@ -33,6 +35,8 @@ class DocumentRepository extends BaseRepository
                 $created->users()->sync($userIds);
             }
 
+            event( new DocumentCreated($created) );
+
             return $created;
         });
     }
@@ -53,6 +57,8 @@ class DocumentRepository extends BaseRepository
             // }
             throw_if( !$updated, GeneralJsonException::class, 'Failed to update document.');
 
+            event( new DocumentUpdated($document) );
+
             if( $userIds = data_get($attributes, 'user_ids') ) {
                 $document->users()->sync($userIds);
             }
@@ -70,6 +76,8 @@ class DocumentRepository extends BaseRepository
             //     throw new \Exception('Cannot delete document.');
             // }
             throw_if( !$deleted, GeneralJsonException::class,'Failed to create document.');
+
+            event( new DocumentUpdated($document) );
 
             return $deleted;
         });

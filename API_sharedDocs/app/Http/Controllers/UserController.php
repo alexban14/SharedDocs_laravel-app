@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use App\Repositories\UserRepository;
-
+use App\Events\Models\User\UserCreated;
 
 class UserController extends Controller
 {
@@ -17,6 +17,9 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        // test event
+        event( new UserCreated( User::factory()->make() ) );
+
         $pageSize = $request->page_size ?? 5;
         $users = User::query()->paginate($pageSize);
 
