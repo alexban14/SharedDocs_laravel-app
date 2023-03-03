@@ -48,8 +48,7 @@ class CommentRepositoryTest extends TestCase
         // env
         $repository = $this->app->make(CommentRepository::class);
 
-        // grabbing the first element from the result of the create method
-        $dummyComment = Comment::factory(1)->create()[0];
+        $dummyComment = Comment::factory()->create();
 
         // source of truth
         $payload = [

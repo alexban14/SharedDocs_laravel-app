@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Comment;
+use App\Exceptions\GeneralJsonException;
 
 
 class CommentRepository extends BaseRepository
