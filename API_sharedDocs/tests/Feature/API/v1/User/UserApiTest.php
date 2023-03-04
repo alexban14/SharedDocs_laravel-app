@@ -1,30 +1,30 @@
 <?php
 
-namespace Tests\Feature\API\v1\Document;
+namespace Tests\Feature\API\v1\User;
 
-use App\Events\Models\Document\DocumentCreated;
-use App\Events\Models\Document\DocumentDeleted;
-use App\Events\Models\Document\DocumentUpdated;
-use App\Models\Document;
+use App\Events\Models\User\UserCreated;
+use App\Events\Models\User\UserDeleted;
+use App\Events\Models\User\UserUpdated;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class DocumentApiTest extends TestCase
+class UserApiTest extends TestCase
 {
     use RefreshDatabase; // a trait that resets all the data from the db
 
     public function test_index()
     {
         // load data in the database
-        $documents = Document::factory(10)->create();
+        $user = User::factory(10)->create();
 
         // loop thru the documents id
-        $documentIds = $documents->map( fn($document) => $document->id);
+        $userIds = $user->map( fn($user) => $user->id);
 
         // call index endpoint
-        $response = $this->json('get', '/api/v1/documents');
+        $response = $this->json('get', '/api/v1/users');
 
         // assert status
         $response->assertStatus(200);
@@ -33,16 +33,16 @@ class DocumentApiTest extends TestCase
         // json() method allows us to access items from the object via dot notation
         $data = $response->json('data');
 
-        // check if the id of each record exists in the document collection from the factory
-        collect($data)->each( fn($document) => $this->assertTrue( in_array($document['id'], $documentIds->toArray()) ) );
+        // check if the id of each record exists in the comment collection from the factory
+        collect($data)->each( fn($user) => $this->assertTrue( in_array($user['id'], $userIds->toArray()) ) );
 
         dump( $data );
     }
 
     public function test_show()
     {
-        $dummy = Document::factory()->create();
-        $response = $this->json('get', "/api/v1/documents/{$dummy->id}");
+        $dummy = User::factory()->create();
+        $response = $this->json('get', "/api/v1/users/{$dummy->id}");
 
         $result = $response->assertStatus(200)->json('data');
 
@@ -53,14 +53,14 @@ class DocumentApiTest extends TestCase
     {
         Event:fake();
 
-        $dummy = Document::factory()->make();
+        $dummy = User::factory()->make();
 
-        $response = $this->json('post', '/api/v1/documents', $dummy->toArray());
+        $response = $this->json('post', '/api/v1/users', $dummy->toArray());
 
         $result = $response->assertStatus(201)->json('data');
 
         // after sending post request, test if an event is dispatched
-        Event::assertDispatched(DocumentCreated::class);
+        Event::assertDispatched(UserCreated::class);
 
         // compare if the document created has the same attribute as the dummy document
         // standardize the result
@@ -75,18 +75,18 @@ class DocumentApiTest extends TestCase
      {
         Event::fake();
 
-        $dummy = Document::factory()->create();
-        $dummy2 = Document::factory()->make();
+        $dummy = User::factory()->create();
+        $dummy2 = User::factory()->make();
 
-        $fillableFields = collect( (new Document())->getFillable() );
+        $fillableFields = collect( (new User())->getFillable() );
 
         $fillableFields->each( function($toUpdate) use($dummy, $dummy2) {
-            $response = $this->json('patch', "/api/v1/documents/{$dummy->id}" , [
+            $response = $this->json('patch', "/api/v1/users/{$dummy->id}" , [
                 $toUpdate => data_get($dummy2, $toUpdate),
             ]);
 
             $result = $response->assertStatus(200)->json('data');
-            Event::assertDispatched(DocumentUpdated::class);
+            Event::assertDispatched(UserUpdated::class);
             $this->assertEquals( data_get($dummy2, $toUpdate), data_get($dummy->refresh(), $toUpdate), 'Failed to update the model');
         } );
      }
@@ -94,13 +94,13 @@ class DocumentApiTest extends TestCase
      public function test_delete()
      {
         Event::fake();
-        $dummy = Document::factory()->create();
+        $dummy = User::factory()->create();
 
-        $response = $this->json('delete', "/api/v1/documents/{$dummy->id}");
+        $response = $this->json('delete', "/api/v1/users/{$dummy->id}");
 
         $result = $response->assertStatus(200);
-        Event::assertDispatched(DocumentDeleted::class);
+        Event::assertDispatched(UserDeleted::class);
         $this->expectException(ModelNotFoundException::class);
-        Document::query()->findOrFail($dummy->id);
+        User::query()->findOrFail($dummy->id);
      }
 }

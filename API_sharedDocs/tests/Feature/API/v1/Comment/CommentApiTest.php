@@ -1,12 +1,13 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\API\v1\Comment;
 
-use App\Events\Comment\CommentCreated;
-use App\Events\Comment\CommentDeleted;
-use App\Events\Comment\CommentUpdated;
+use App\Events\Models\Comment\CommentCreated;
+use App\Events\Models\Comment\CommentDeleted;
+use App\Events\Models\Comment\CommentUpdated;
 use App\Models\Comment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
@@ -50,7 +51,7 @@ class CommentApiTest extends TestCase
 
     public function test_create()
     {
-        // Event:fake();
+        Event:fake();
 
         $dummy = Comment::factory()->make();
 
@@ -59,7 +60,7 @@ class CommentApiTest extends TestCase
         $result = $response->assertStatus(201)->json('data');
 
         // after sending post request, test if an event is dispatched
-        // Event::assertDispatched(CommentCreated::class);
+        Event::assertDispatched(CommentCreated::class);
 
         // compare if the document created has the same attribute as the dummy document
         // standardize the result
@@ -72,7 +73,7 @@ class CommentApiTest extends TestCase
 
      public function test_update()
      {
-        // Event::fake();
+        Event::fake();
 
         $dummy = Comment::factory()->create();
         $dummy2 = Comment::factory()->make();
@@ -85,20 +86,20 @@ class CommentApiTest extends TestCase
             ]);
 
             $result = $response->assertStatus(200)->json('data');
-            // Event::assertDispatched(CommentUpdated::class);
+            Event::assertDispatched(CommentUpdated::class);
             $this->assertEquals( data_get($dummy2, $toUpdate), data_get($dummy->refresh(), $toUpdate), 'Failed to update the model');
         } );
      }
 
      public function test_delete()
      {
-        // Event::fake();
+        Event::fake();
         $dummy = Comment::factory()->create();
 
         $response = $this->json('delete', "/api/v1/comments/{$dummy->id}");
 
         $result = $response->assertStatus(200);
-        // Event::assertDispatched(CommentDeleted::class);
+        Event::assertDispatched(CommentDeleted::class);
         $this->expectException(ModelNotFoundException::class);
         Comment::query()->findOrFail($dummy->id);
      }

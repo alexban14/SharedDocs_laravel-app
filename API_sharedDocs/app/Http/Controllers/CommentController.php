@@ -50,8 +50,8 @@ class CommentController extends Controller
     {
         $updated = $repository->update($comment, $request->only([
             'body',
-            'user_id',
-            'document_id'
+            // 'user_id',
+            // 'document_id'
         ]));
 
         return new CommentResource($updated);

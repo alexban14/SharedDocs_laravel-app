@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Comment;
+namespace App\Events\Models\Comment;
 
 use App\Models\Comment;
 use Illuminate\Broadcasting\Channel;
