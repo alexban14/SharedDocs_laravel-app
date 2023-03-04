@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\GeneralJsonException;
+use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\DocumentResource;
 use App\Repositories\DocumentRepository;
+use App\Rules\IntegerArray;
+use Illuminate\Support\Facades\Validator;
 
 class DocumentController extends Controller
 {
@@ -35,13 +39,38 @@ class DocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, DocumentRepository $repository)
+    public function store(StoreDocumentRequest $request, DocumentRepository $repository)
     {
-        $created = $repository->create($request->only([
+        // payload = the request body
+        $payload = $request->only([
             'title',
             'body',
             'user_ids'
-        ]));
+        ]);
+
+        // Validation using validator facade
+        // $validator = Validator::make($payload /** first argument, the actual data that needs validation */, [
+        //     // first argument, validation rules
+        //     'title' => ['string', 'required'],
+        //     'body' => ['string', 'required'],
+        //     'user_ids' => [
+        //         'array',
+        //         'required',
+        //         // custom validation with
+        //         new IntegerArray()
+        //     ]
+        // ], [
+        //     // seconde argument, custom validation messages
+        //     'body.required' => 'Please enter a value for body',
+        //     'title.string' => 'Please use strings a the title body',
+        // ], [
+        //     // third argument, custom attributes name
+        //     'user_ids' => 'User Ids'
+        // ]);
+
+        // $validator->validate();
+
+        $created = $repository->create($payload);
 
         return new DocumentResource($created);
     }
@@ -62,7 +91,7 @@ class DocumentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Document $document, DocumentRepository $repository)
+    public function update(UpdateDocumentRequest $request, Document $document, DocumentRepository $repository)
     {
         $updated = $repository->update($document, $request->only([
             'title',

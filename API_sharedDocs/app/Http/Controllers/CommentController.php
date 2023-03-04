@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +26,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request  $request, CommentRepository $repository)
+    public function store(StoreCommentRequest  $request, CommentRepository $repository)
     {
         $created = $repository->create($request->only([
             'body',
@@ -46,7 +48,7 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comment $comment, CommentRepository $repository)
+    public function update(UpdateCommentRequest $request, Comment $comment, CommentRepository $repository)
     {
         $updated = $repository->update($comment, $request->only([
             'body',
