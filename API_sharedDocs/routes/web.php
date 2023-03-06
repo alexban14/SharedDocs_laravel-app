@@ -38,3 +38,7 @@ if( App::environment('local') ) {
         return null;
     });
 }
+
+Route::get('/sanctum-cookie', function() {
+    return view('sanctumApp');
+});
