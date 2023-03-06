@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Mail\WelcomeMail;
 use App\Models\User;
 use Illuminate\Mail\Mailables\Content;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/reset-password/{token}', function($token) {
+    return view('auth.password-reset', [
+        'token' => $token
+    ]);
+})->middleware(['guest:'.config('fortify.guard')])
+  ->name('password.reset');
+
 
 if( App::environment('local') ) {
     Route::get('/playground', function () {
-        return new WelcomeMail(User::factory()->make());
+        $user = User::factory()->make();
+        Mail::to($user)->send(new WelcomeMail($user));
+
+        return null;
     });
 }

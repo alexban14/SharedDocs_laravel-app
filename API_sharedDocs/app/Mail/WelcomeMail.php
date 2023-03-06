@@ -30,7 +30,7 @@ class WelcomeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome Mail',
+            subject: 'Welcome to Shared Docs',
         );
     }
 
@@ -41,6 +41,9 @@ class WelcomeMail extends Mailable
     {
         return new Content(
             markdown: 'mail.welcomeMail',
+            with: [
+                'name' => $this->user->name,
+            ]
         );
     }
 
@@ -51,8 +54,6 @@ class WelcomeMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            // 'name' => $this->user->name,
-        ];
+        return [ ];
     }
 }

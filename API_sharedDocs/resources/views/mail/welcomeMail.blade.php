@@ -1,7 +1,7 @@
 @component("mail::message")
 
-{{-- # Welcome, {{ $user->name }}!! --}}
-# Welcome !!
+# Welcome, {{ $name }}!!
+{{-- # Welcome !! --}}
 
 @component('mail::button', ['url' => 'https://google.com'])
 Button Text
@@ -26,6 +26,6 @@ This is a subcopy component
 @endcomponent
 
 Thanks, <br>
-{{-- {{ config('app.name') }} --}}
+{{ config('app.name') }}
 
 @endcomponent
