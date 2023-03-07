@@ -6,6 +6,7 @@ use App\Events\Models\Document\DocumentCreated;
 use App\Events\Models\Document\DocumentDeleted;
 use App\Events\Models\Document\DocumentUpdated;
 use App\Models\Document;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -14,6 +15,21 @@ use Tests\TestCase;
 class DocumentApiTest extends TestCase
 {
     use RefreshDatabase; // a trait that resets all the data from the db
+
+    // // runs after a test is execute, to reset any side effects and left overs from the test
+    // public function tearDown(): void
+    // {
+    //     parent::tearDown();
+    // }
+
+    // runs before a test is executed to replicate user registration
+    public function setup(): void
+    {
+        parent::setup();
+        $user = User::factory()->make();
+        // accepts a second argument if you want to specify any auth guards
+        $this->actingAs($user);
+    }
 
     public function test_index()
     {
@@ -55,7 +71,9 @@ class DocumentApiTest extends TestCase
 
         $dummy = Document::factory()->make();
 
-        $response = $this->json('post', '/api/v1/documents', $dummy->toArray());
+        $dummyUser = User::factory()->create();
+
+        $response = $this->json('post', '/api/v1/documents', array_merge( $dummy->toArray(), [ 'user_ids' => [$dummyUser->id] ] ) );
 
         $result = $response->assertStatus(201)->json('data');
 

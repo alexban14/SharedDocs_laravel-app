@@ -25,7 +25,7 @@ class StoreDocumentRequest extends FormRequest
     {
         return [
             'title' => ['string', 'required'],
-            'body' => ['string', 'required'],
+            'body' => ['array', 'required'],
             'user_ids' => [
                 'array',
                 'required',

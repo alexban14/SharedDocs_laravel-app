@@ -15,6 +15,15 @@ class UserApiTest extends TestCase
 {
     use RefreshDatabase; // a trait that resets all the data from the db
 
+    // runs before a test is executed to replicate user registration
+    public function setup(): void
+    {
+        parent::setup();
+        $user = User::factory()->make();
+        // accepts a second argument if you want to specify any auth guards
+        $this->actingAs($user);
+    }
+
     public function test_index()
     {
         // load data in the database

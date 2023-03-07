@@ -24,7 +24,7 @@ class UpdateDocumentRequest extends FormRequest
     {
         return [
             'title' => 'string',
-            'body' => 'string',
+            'body' => 'array',
             'user_ids' => [
                 'array',
                 new IntegerArray

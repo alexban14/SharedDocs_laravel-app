@@ -18,7 +18,7 @@ class DocumentFactory extends Factory
     {
         return [
             'title' => $this->faker->word(),
-            'body' => []
+            'body' => ['random string']
         ];
     }
 

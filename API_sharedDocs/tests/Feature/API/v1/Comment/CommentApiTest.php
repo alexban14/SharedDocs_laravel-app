@@ -6,6 +6,7 @@ use App\Events\Models\Comment\CommentCreated;
 use App\Events\Models\Comment\CommentDeleted;
 use App\Events\Models\Comment\CommentUpdated;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
@@ -14,6 +15,15 @@ use Tests\TestCase;
 class CommentApiTest extends TestCase
 {
     use RefreshDatabase; // a trait that resets all the data from the db
+
+    // runs before a test is executed to replicate user registration
+    public function setup(): void
+    {
+        parent::setup();
+        $user = User::factory()->make();
+        // accepts a second argument if you want to specify any auth guards
+        $this->actingAs($user);
+    }
 
     public function test_index()
     {
@@ -55,7 +65,11 @@ class CommentApiTest extends TestCase
 
         $dummy = Comment::factory()->make();
 
-        $response = $this->json('post', '/api/v1/comments', $dummy->toArray());
+        $response = $this->json('post', '/api/v1/comments', [
+            'body' => $dummy->body,
+            'user_id' => $dummy->user_id,
+            'document_id' => $dummy->document_id,
+        ]);
 
         $result = $response->assertStatus(201)->json('data');
 
