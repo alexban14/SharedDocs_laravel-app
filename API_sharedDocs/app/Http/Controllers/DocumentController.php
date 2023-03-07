@@ -9,8 +9,12 @@ use App\Models\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\DocumentResource;
+use App\Models\User;
+use App\Notifications\DocumentSharedNotification;
 use App\Repositories\DocumentRepository;
 use App\Rules\IntegerArray;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class DocumentController extends Controller
@@ -110,6 +114,34 @@ class DocumentController extends Controller
         $document = $repository->forceDelete($document);
         return new JsonResponse([
             'data' => 'success'
+        ]);
+    }
+
+        /**
+     * Share a specified post from storage.
+     * @response 200 {
+     *  "data": "signed url..."
+     * }
+     * @param  \App\Models\Document  $document
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function share(Request $request, Document $document)
+    {
+        $url = URL::temporarySignedRoute('shared.document', now()->addDays(30), [
+            'document' => $document->id,
+        ]);
+
+        $users = User::query()->whereIn('id', $request->user_ids)->get();
+
+        // notification facade to send notification
+        Notification::send($users, new DocumentSharedNotification($document, $url));
+
+        // an alternative to use the notify method on a user instance
+        // $user = User::query()->find(1);
+        // $user->notify( new DocumentSharedNotification($document, $url));
+
+        return new JsonResponse([
+            'data' => $url,
         ]);
     }
 }

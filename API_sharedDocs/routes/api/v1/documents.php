@@ -27,4 +27,6 @@ Route::group([
     Route::post('/documents', [DocumentController::class, 'store'])->name('store');
     Route::patch('/documents/{document}', [DocumentController::class, 'update'])->name('update');
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('destroy');
+
+    Route::post('/documents/{document}/share', [DocumentController::class, 'share'])->name('share');
 });

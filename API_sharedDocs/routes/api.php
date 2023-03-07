@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')
-    ->middleware(['auth:sanctum'])
+    // ->middleware(['auth:sanctum'])
     ->group(function()
     {
         // iterate thru the v1 folder recursively so it automatically picks up a new file with api endpoints
