@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\ChatMessageEvent;
+use App\Events\PlaygroundEvent;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Mail\WelcomeMail;
@@ -9,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+
+use function PHPSTORM_META\map;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,14 +62,25 @@ if( App::environment('local') ) {
     });
 
 
-
-
-
     // welcome email message demo
     Route::get('/welcome-mail', function () {
         $user = User::factory()->make();
         Mail::to($user)->send(new WelcomeMail($user));
 
+        return null;
+    });
+
+    Route::get('/playground', function() {
+        event(new ChatMessageEvent('Playground event'));
+        return null;
+    });
+
+    Route::get('/ws', function() {
+        return view('websocket');
+    });
+
+    Route::post('/chat-message', function(Request $request) {
+        event(new ChatMessageEvent($request->message));
         return null;
     });
 }
