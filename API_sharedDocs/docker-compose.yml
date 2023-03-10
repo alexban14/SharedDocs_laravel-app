@@ -21,6 +21,14 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - traefik
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.rule=Host(`${APP_URL}`)"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.entrypoints=http"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.middlewares=https-redirect"
+            - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
         depends_on:
             - mysql
     mysql:
@@ -47,9 +55,22 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    traefik:
+        image: "traefik:v2.5"
+        container_name: "traefik"
+        ports:
+        - "70:70"
+        - "443:443"
+        # (Optional) Expose Dashboard
+        - "8080:8080"  # Don't do this in production!
+        volumes:
+        - /etc/traefik:/etc/traefik
+        - /var/run/docker.sock:/var/run/docker.sock:ro
 networks:
     sail:
-        driver: bridge
+        # driver: bridge
+    traefik:
+        external: false
 volumes:
     sail-mysql:
         driver: local
