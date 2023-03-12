@@ -21,13 +21,21 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
-            - traefik
+            - web
+            # - traefik
         labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.rule=Host(`${APP_URL}`)"
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.entrypoints=http"
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_laravel.middlewares=https-redirect"
-            - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+             # This is enableing treafik to proxy this service
+            - 'traefik.enable=true'
+            # Here we have to define the URL
+            # More details https://doc.traefik.io/traefik/v2.0/routing/routers/#rule
+            # - 'traefik.http.routers.laravel-app.rule=HostRegexp(`laravel-app.localhost`, `{subdomain:[a-z]+}.laravel-app.localhost`)'
+            - 'traefik.http.routers.shared-docs.rule=Host(`shared-docs.localhost`)'
+            # Here we are defining wich entrypoint should be used by clients to access this service
+            - 'traefik.http.routers.laravel-app.entrypoints=web'
+            # Here we define in wich network treafik can find this service
+            - 'traefik.docker.network=web'
+            # This is the port that traefik should proxy
+            - 'traefik.http.services.shared-docs.loadbalancer.server.port=80'
 
         depends_on:
             - mysql
@@ -55,22 +63,22 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
-    traefik:
-        image: "traefik:v2.5"
-        container_name: "traefik"
-        ports:
-        - "70:70"
-        - "443:443"
-        # (Optional) Expose Dashboard
-        - "8080:8080"  # Don't do this in production!
-        volumes:
-        - /etc/traefik:/etc/traefik
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+    # traefik:
+    #     image: "traefik:v2.5"
+    #     container_name: "traefik"
+    #     ports:
+    #     - "70:70"
+    #     - "443:443"
+    #     # (Optional) Expose Dashboard
+    #     - "8080:8080"  # Don't do this in production!
+    #     volumes:
+    #     - /etc/traefik:/etc/traefik
+    #     - /var/run/docker.sock:/var/run/docker.sock:ro
 networks:
     sail:
-        # driver: bridge
-    traefik:
-        external: false
+        driver: bridge
+    web:
+        external: true
 volumes:
     sail-mysql:
         driver: local
